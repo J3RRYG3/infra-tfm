@@ -1,0 +1,24 @@
+# Archivos de estado de Terraform (contienen información sensible)
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.tfstate.d/
+
+# Archivos de variables con valores sensibles
+*.tfvars
+*.auto.tfvars
+!example.tfvars
+
+# Directorio de crash logs
+crash.log
+crash.*.log
+
+# Archivos de override
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Archivos de plan
+*.tfplan
