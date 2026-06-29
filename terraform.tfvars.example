@@ -1,0 +1,20 @@
+# Copy this file to terraform.tfvars and replace placeholders with real values.
+
+project_name  = "cloud-panel-infra"
+environment   = "prod"
+
+aws_region     = "us-east-1"
+aws_access_key = "your-aws-access-key-id"
+aws_secret_key = "your-aws-secret-access-key"
+
+azure_subscription_id         = "your-azure-subscription-id"
+azure_tenant_id               = "your-azure-tenant-id"
+azure_resource_group_name     = "your-azure-resource-group-name"
+azure_resource_group_location = "eastus"
+azure_location                = "chilecentral"
+azure_sql_admin_login         = "your-sql-admin-login"
+azure_sql_admin_password      = "your-sql-admin-password"
+
+gcp_project_id       = "your-gcp-project-id"
+gcp_region           = "us-central1"
+gcp_credentials_file = "C:/path/to/your-gcp-service-account.json"

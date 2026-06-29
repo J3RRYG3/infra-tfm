@@ -27,18 +27,6 @@ variable "azure_subscription_id" {
   sensitive   = true
 }
 
-variable "azure_client_id" {
-  description = "ID de la aplicación de servicio en Azure AD"
-  type        = string
-  sensitive   = true
-}
-
-variable "azure_client_secret" {
-  description = "Secreto de la aplicación de servicio en Azure AD"
-  type        = string
-  sensitive   = true
-}
-
 variable "azure_tenant_id" {
   description = "ID del tenant de Azure AD"
   type        = string
@@ -46,9 +34,32 @@ variable "azure_tenant_id" {
 }
 
 variable "azure_location" {
-  description = "Región de Azure"
+  description = "Región de Azure para recursos de datos (SQL)"
   type        = string
-  default     = "East US"
+  default     = "chilecentral"
+}
+
+variable "azure_resource_group_location" {
+  description = "Región del Resource Group de Azure"
+  type        = string
+  default     = "eastus"
+}
+
+variable "azure_resource_group_name" {
+  description = "Nombre del grupo de recursos de Azure"
+  type        = string
+}
+
+variable "azure_sql_admin_login" {
+  description = "Login del administrador de Azure SQL"
+  type        = string
+  sensitive   = true
+}
+
+variable "azure_sql_admin_password" {
+  description = "Contraseña del administrador de Azure SQL"
+  type        = string
+  sensitive   = true
 }
 
 variable "gcp_project_id" {

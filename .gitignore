@@ -22,3 +22,5 @@ override.tf.json
 
 # Archivos de plan
 *.tfplan
+.env
+storage/**

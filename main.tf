@@ -1,83 +1,3 @@
-terraform {
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = "~> 5.0"
-    }
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.0"
-    }
-  }
-}
-
-provider "google" {
-  project = var.gcp_project_id
-  region  = var.gcp_region
-}
-
-provider "aws" {
-  region = var.aws_region
-}
-
-provider "azurerm" {
-  features {}
-}
-
-variable "project_name" {
-  description = "Nombre del proyecto para tags/labels."
-  type        = string
-}
-
-variable "environment" {
-  description = "Entorno de despliegue (e.g., dev, prod)."
-  type        = string
-}
-
-variable "gcp_project_id" {
-  description = "ID del proyecto de GCP."
-  type        = string
-}
-
-variable "gcp_region" {
-  description = "Región de GCP."
-  type        = string
-  default     = "us-central1"
-}
-
-variable "aws_region" {
-  description = "Región de AWS."
-  type        = string
-  default     = "us-east-1"
-}
-
-variable "azure_resource_group_name" {
-  description = "Nombre del grupo de recursos de Azure."
-  type        = string
-}
-
-variable "azure_location" {
-  description = "Ubicación de Azure."
-  type        = string
-  default     = "eastus"
-}
-
-variable "azure_sql_admin_login" {
-  description = "Login del administrador de Azure SQL."
-  type        = string
-  sensitive   = true
-}
-
-variable "azure_sql_admin_password" {
-  description = "Contraseña del administrador de Azure SQL."
-  type        = string
-  sensitive   = true
-}
-
 resource "google_cloud_run_v2_service" "main" {
   name     = "midrive-app-service"
   location = var.gcp_region
@@ -120,7 +40,7 @@ resource "google_storage_bucket" "main" {
 
 resource "azurerm_resource_group" "main" {
   name     = var.azure_resource_group_name
-  location = var.azure_location
+  location = var.azure_resource_group_location
 
   tags = {
     project     = var.project_name
@@ -131,7 +51,7 @@ resource "azurerm_resource_group" "main" {
 resource "azurerm_mssql_server" "main" {
   name                         = "midrive-sql-server"
   resource_group_name          = azurerm_resource_group.main.name
-  location                     = azurerm_resource_group.main.location
+  location                     = var.azure_location
   version                      = "12.0" # SQL Server 2019
   administrator_login          = var.azure_sql_admin_login
   administrator_login_password = var.azure_sql_admin_password
@@ -144,12 +64,13 @@ resource "azurerm_mssql_server" "main" {
 
 resource "azurerm_mssql_database" "main" {
   name                        = "midrive-user-db"
-  server_name                 = azurerm_mssql_server.main.name
-  resource_group_name         = azurerm_resource_group.main.name
-  sku_name                    = "Serverless"
+  server_id                   = azurerm_mssql_server.main.id
+  sku_name                    = "GP_S_Gen5_1"
   max_size_gb                 = 32
   min_capacity                = 0.5 # Minimum vCores for Serverless
   auto_pause_delay_in_minutes = 60
+  storage_account_type        = "Local"
+  geo_backup_enabled          = true
 
   tags = {
     project     = var.project_name
@@ -164,6 +85,20 @@ resource "aws_cognito_user_pool" "main" {
     project     = var.project_name
     environment = var.environment
   }
+}
+
+resource "aws_cognito_user_pool_client" "main" {
+  name         = "midrive-app-client"
+  user_pool_id = aws_cognito_user_pool.main.id
+
+  generate_secret                      = false
+  prevent_user_existence_errors        = "ENABLED"
+  allowed_oauth_flows_user_pool_client = false
+  explicit_auth_flows = [
+    "ALLOW_USER_PASSWORD_AUTH",
+    "ALLOW_REFRESH_TOKEN_AUTH",
+    "ALLOW_USER_SRP_AUTH"
+  ]
 }
 
 resource "aws_cloudfront_distribution" "main" {

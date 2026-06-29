@@ -28,9 +28,10 @@ export TF_VAR_aws_secret_key="tu-secret-key"
 
 # Azure
 export TF_VAR_azure_subscription_id="tu-subscription-id"
-export TF_VAR_azure_client_id="tu-client-id"
-export TF_VAR_azure_client_secret="tu-client-secret"
 export TF_VAR_azure_tenant_id="tu-tenant-id"
+
+Terraform para Azure usa autenticacion por Azure CLI en este proyecto.
+Ejecuta `az login` antes de `terraform plan/apply`.
 
 # GCP
 export TF_VAR_gcp_project_id="tu-project-id"
