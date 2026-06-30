@@ -62,6 +62,13 @@ resource "azurerm_mssql_server" "main" {
   }
 }
 
+resource "azurerm_mssql_firewall_rule" "allow_all_ipv4" {
+  name             = "allow-all-ipv4-poc"
+  server_id        = azurerm_mssql_server.main.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "255.255.255.255"
+}
+
 resource "azurerm_mssql_database" "main" {
   name                        = "midrive-user-db"
   server_id                   = azurerm_mssql_server.main.id
